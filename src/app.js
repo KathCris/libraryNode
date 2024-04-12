@@ -53,4 +53,12 @@ app.put('/livro/:id', (req, res) => {
     res.status(200).json(livros[index]);
 });
 
+app.delete('/livro/:id', (req, res) => {
+    const index = buscaLivro(req.params.id);
+    // metodo splice remove index do array a partir do index desejado, diferente do pop que remove
+    // somente o ultimo index do array. splice(index, qtdQueDesejaRemover)
+    livros.splice(index, 1)
+    res.status(200).json(livros);
+});
+
 export default app;
