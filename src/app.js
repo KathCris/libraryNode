@@ -1,5 +1,6 @@
 import express from 'express';
 import connectDataBase from './config/dbconnect.js';
+import Livro from './models/Livro.js';
 
 const connection = await connectDataBase();
 
@@ -15,33 +16,14 @@ const app = express();
 // app.use(express.json()); tem a função de middleware (que é ter acesso a req e res e conseguir fazer modificações)
 app.use(express.json());
 
-const livros = [
-    {
-        "id": 1,
-        "livro": "Oceano no fim do caminho"
-    }, 
-    {
-        "id": 2,
-        "livro": "Lugar nenhum"
-    }, 
-    {
-        "id": 3,
-        "livro": "A culpa é das estrelas"
-    }, 
-]
-
-function buscaLivro(id) {
-    return livros.findIndex(item => {
-        return item.id === Number(id);
-    })
-}
 
 app.get('/', (req, res) => {
     res.status(200).send('Get do curso de node');
 });
 
-app.get('/livros', (req, res) => {
-    res.status(200).json(livros);
+app.get('/livros', async (req, res) => {
+    const ListaLivros = await Livro.find({});
+    res.status(200).json(ListaLivros);
 });
 
 app.get('/livros/:id', (req, res) => {
