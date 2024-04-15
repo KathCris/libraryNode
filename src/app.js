@@ -1,4 +1,15 @@
 import express from 'express';
+import connectDataBase from './config/dbconnect.js';
+
+const connection = await connectDataBase();
+
+connection.on("error", (erro) => {
+    console.error("erro na conexão com o banco", erro);
+})
+
+connection.once("open", () => {
+    console.log('Conexão com o banco feita com sucesso')
+})
 
 const app = express();
 // app.use(express.json()); tem a função de middleware (que é ter acesso a req e res e conseguir fazer modificações)
