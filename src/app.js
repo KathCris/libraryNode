@@ -1,36 +1,29 @@
 import express from 'express';
+import connectDataBase from './config/dbconnect.js';
+import Livro from './models/Livro.js';
+
+const connection = await connectDataBase();
+
+connection.on("error", (erro) => {
+    console.error("erro na conexão com o banco", erro);
+})
+
+connection.once("open", () => {
+    console.log('Conexão com o banco feita com sucesso')
+})
 
 const app = express();
 // app.use(express.json()); tem a função de middleware (que é ter acesso a req e res e conseguir fazer modificações)
 app.use(express.json());
 
-const livros = [
-    {
-        "id": 1,
-        "livro": "Oceano no fim do caminho"
-    }, 
-    {
-        "id": 2,
-        "livro": "Lugar nenhum"
-    }, 
-    {
-        "id": 3,
-        "livro": "A culpa é das estrelas"
-    }, 
-]
-
-function buscaLivro(id) {
-    return livros.findIndex(item => {
-        return item.id === Number(id);
-    })
-}
 
 app.get('/', (req, res) => {
     res.status(200).send('Get do curso de node');
 });
 
-app.get('/livros', (req, res) => {
-    res.status(200).json(livros);
+app.get('/livros', async (req, res) => {
+    const ListaLivros = await Livro.find({});
+    res.status(200).json(ListaLivros);
 });
 
 app.get('/livros/:id', (req, res) => {
@@ -51,6 +44,14 @@ app.put('/livro/:id', (req, res) => {
     const index = buscaLivro(req.params.id);
     livros[index].livro = req.body.livro;
     res.status(200).json(livros[index]);
+});
+
+app.delete('/livro/:id', (req, res) => {
+    const index = buscaLivro(req.params.id);
+    // metodo splice remove index do array a partir do index desejado, diferente do pop que remove
+    // somente o ultimo index do array. splice(index, qtdQueDesejaRemover)
+    livros.splice(index, 1)
+    res.status(200).json(livros);
 });
 
 export default app;
